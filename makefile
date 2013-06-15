@@ -4,23 +4,31 @@ YACC = bison
 
 CFLAGS =
 
-tmc: scan.o parse.o util.o scan.aux.o parse.aux.o symtab.o main.o
-	$(CC) $(CFLAGS) -o tmc scan.o parse.o util.o scan.aux.o parse.aux.o symtab.o main.o
+cmc: scan.o parse.o semantic.o \
+		scan.aux.o parse.aux.o semantic.aux.o \
+		util.o main.o
+	$(CC) $(CFLAGS) -o cmc \
+		scan.o parse.o semantic.o \
+		scan.aux.o parse.aux.o semantic.aux.o \
+		util.o main.o
 
 main.o: main.c parse.tab.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-symtab.o: symtab.c parse.tab.h
-	$(CC) $(CFLAGS) -c symtab.c -o symtab.o
+util.o: util.c parse.tab.h
+	$(CC) $(CFLAGS) -c util.c -o util.o
+
+semantic.o: semantic.c parse.tab.h
+	$(CC) $(CFLAGS) -c semantic.c -o semantic.o
+
+semantic.aux.o: semantic.aux.c parse.tab.h
+	$(CC) $(CFLAGS) -c semantic.aux.c -o semantic.aux.o
 
 parse.aux.o: parse.aux.c parse.tab.h
 	$(CC) $(CFLAGS) -c parse.aux.c -o parse.aux.o
 
 scan.aux.o: scan.aux.c parse.tab.h
 	$(CC) $(CFLAGS) -c scan.aux.c -o scan.aux.o
-
-util.o: util.c parse.tab.h
-	$(CC) $(CFLAGS) -c util.c -o util.o
 
 scan.o parse.o parse.tab.h: scan.l parse.y globals.h
 	$(YACC) -d parse.y

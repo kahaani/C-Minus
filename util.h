@@ -9,7 +9,9 @@ typedef enum {
 void yyerror(char *s, ...);
 void error(ErrorType type, char *s, ...);
 
+char* errortype_to_str(ErrorType type);
 char* type_to_str(Type type);
 char* stkind_to_str(StKind kind);
+char* operator_to_str(int op);
 
 #endif /* UTIL_H */

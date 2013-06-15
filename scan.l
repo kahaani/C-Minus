@@ -43,12 +43,12 @@
 "==" { return EQ; }
 "!=" { return NE; }
 
-[0-9]+		{ yylval.int_value = atoi(yytext);   return NUM; }
-[a-zA-Z]+	{ yylval.str_value = strdup(yytext); return ID; }
+[0-9]+					{ yylval.int_value = atoi(yytext);   return NUM; }
+[_a-zA-Z][_a-zA-Z0-9]*	{ yylval.str_value = strdup(yytext); return ID; /* extension */ }
 
 [ \t\n]		{ }
 
-.			{ error(LexicalError, "illegal character: %s", yytext); }
+.			{ error(LexicalError, "illegal character \"%s\"", yytext); }
 
 %%
 

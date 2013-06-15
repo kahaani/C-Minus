@@ -69,12 +69,13 @@ Ast parse();
 
 #include "scan.aux.h"
 #include "parse.aux.h"
-#include "symtab.h"
+#include "semantic.aux.h"
+#include "semantic.h"
 #include "util.h"
 
-#define TRACE_SCAN   FALSE
-#define YYDEBUG      FALSE
-#define TRACE_PARSE  TRUE
-#define TRACE_SYMTAB TRUE
+#define TRACE_SCAN     FALSE
+#define YYDEBUG        FALSE
+#define TRACE_PARSE    TRUE
+#define TRACE_SEMANTIC TRUE
 
 #endif /* GLOBALS_H */

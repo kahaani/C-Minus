@@ -17,5 +17,6 @@
 *.app
 
 # Lex and Yacc
+lex.yy.c
 *.tab.*
 

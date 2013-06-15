@@ -1,7 +1,5 @@
 #include "globals.h"
 
-static char* errortype_to_str(ErrorType type);
-
 // for yacc
 void yyerror(char *s, ...) {
 	va_list ap;
@@ -25,8 +23,12 @@ void error(ErrorType type, char *s, ...) {
 		case TypeError:
 			fprintf(stderr, "%s in line %d: ", errortype_to_str(type), yylineno);
 			break;
-		default:
+		case Bug:
+		case RuntimeError:
 			fprintf(stderr, "%s: ", errortype_to_str(type));
+			break;
+		default:
+			error(Bug, "unknown error type");
 	}
 	
 	vfprintf(stderr, s, ap);
@@ -35,70 +37,50 @@ void error(ErrorType type, char *s, ...) {
 	exit(1);
 }
 
-static char* errortype_to_str(ErrorType type) {
-	char* s;
+char* errortype_to_str(ErrorType type) {
 	switch(type) {
-		case Bug:
-			s = "Bug";
-			break;
-		case RuntimeError:
-			s = "Runtime Error";
-			break;
-		case LexicalError:
-			s = "Lexical Error";
-			break;
-		case SyntaxError:
-			s = "Syntax Error";
-			break;
-		case SemanticError:
-			s = "Semantic Error";
-			break;
-		case TypeError:
-			s = "Type Error";
-			break;
-		default:
-			error(Bug, "unknown error type");
+		case Bug:           return "Bug";
+		case RuntimeError:  return "Runtime Error";
+		case LexicalError:  return "Lexical Error";
+		case SyntaxError:   return "Syntax Error";
+		case SemanticError: return "Semantic Error";
+		case TypeError:     return "Type Error";
+		default: error(Bug, "unknown error type");
 	}
-	return s;
 }
 
 char* type_to_str(Type type) {
-	char* s;
 	switch(type) {
-		case IntT:
-			s = "IntT";
-			break;
-		case IntArrayT:
-			s = "IntArrayT";
-			break;
-		case VoidT:
-			s = "VoidT";
-			break;
-		case BoolT:
-			s = "BoolT";
-			break;
-		default:
-			error(Bug, "unknown type");
+		case IntT:      return "IntT";
+		case IntArrayT: return "IntArrayT";
+		case VoidT:     return "VoidT";
+		case BoolT:     return "BoolT";
+		default: error(Bug, "unknown type");
 	}
-	return s;
 }
 
 char* stkind_to_str(StKind kind) {
-	char* s;
 	switch(kind) {
-		case Global_Var:
-			s = "Global_Var";
-			break;
-		case Fun_Param:
-			s = "Fun_Param";
-			break;
-		case Compound_Var:
-			s = "Compound_Var";
-			break;
-		default:
-			error(Bug, "unknown symtab kind");
+		case Global_Var:   return "Global_Var";
+		case Fun_Param:    return "Fun_Param";
+		case Compound_Var: return "Compound_Var";
+		default: error(Bug, "unknown symtab kind");
 	}
-	return s;
 }
 
+char* operator_to_str(int op) {
+	switch(op) {
+		case '+': return "+";
+		case '-': return "-";
+		case '*': return "*";
+		case '/': return "/";
+		case EQ: return "==";
+		case NE: return "!=";
+		case LT: return "<";
+		case LE: return "<=";
+		case GT: return ">";
+		case GE: return ">=";
+		default: error(Bug, "unknown operator");
+	}
+}
 

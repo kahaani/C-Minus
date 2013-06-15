@@ -140,8 +140,10 @@ static void print_ast(Ast node) {
 			print_ast(node->children[1]);
 			break;
 		case Expr_Binary:
-			printf("Expr_Binary: type = %s, lineno = %d",
-					type_to_str(node->type), node->lineno);
+			printf("Expr_Binary: type = %s, oper = \"%s\", lineno = %d\n",
+					type_to_str(node->type), operator_to_str(node->operator), node->lineno);
+			break;
+			/*
 			switch(node->operator) {
 				case LT: printf(", oper = LT\n"); break;
 				case LE: printf(", oper = LE\n"); break;
@@ -151,6 +153,7 @@ static void print_ast(Ast node) {
 				case NE: printf(", oper = NE\n"); break;
 				default: printf(", oper = %c\n", node->operator);
 			}
+			*/
 			print_spaces(); printf("--left expression:\n");
 			print_ast(node->children[0]);
 			print_spaces(); printf("--right expression:\n");

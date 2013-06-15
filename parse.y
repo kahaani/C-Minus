@@ -79,7 +79,7 @@ declaration:
 var_declaration:
 	  type_specifier ID { push_lineno(yylineno); } ';' {
 	    if($1 == VoidT) {
-	      yyerror("declare variable as void");
+	      error(SemanticError, "declare variable \"%s\" as void", $2); // 提前检查
 	    } else {
 	      assert($1 == IntT);
 	      Ast node = new_ast_node();
@@ -92,7 +92,7 @@ var_declaration:
 	  }
 	| type_specifier ID { push_lineno(yylineno); } '[' NUM ']' ';' {
 	    if($1 == VoidT) {
-	      yyerror("declare variable as void");
+	      error(SemanticError, "declare variable \"%s\" as void", $2); // 提前检查
 	    } else {
 	      assert($1 == IntT);
 	      Ast node = new_ast_node();
@@ -142,7 +142,7 @@ param_list:
 param:
 	  type_specifier ID {
 	    if($1 == VoidT) {
-	      yyerror("declare parameter as void");
+	      error(SemanticError, "declare parameter \"%s\" as void", $2); // 提前检查
 	    } else {
 	      assert($1 == IntT);
 	      Ast node = new_ast_node();
@@ -155,7 +155,7 @@ param:
 	  }
 	| type_specifier ID { push_lineno(yylineno); } '[' ']' {
 	    if($1 == VoidT) {
-	      yyerror("declare parameter as void");
+	      error(SemanticError, "declare parameter \"%s\" as void", $2); // 提前检查
 	    } else {
 	      assert($1 == IntT);
 	      Ast node = new_ast_node();
@@ -399,11 +399,11 @@ args:
 	| { $$ = NULL; }
 	;
 
-/* 改成右递归 */
+/* 左递归，从右往左逆序排列 */
 arg_list:
-	  expression ',' arg_list {
-	    Ast node = $1;
-	    node->sibling = $3;
+	  arg_list ',' expression {
+	    Ast node = $3;
+	    node->sibling = $1;
 	    $$ = node;
 	  }
 	| expression { $$ = $1; }
