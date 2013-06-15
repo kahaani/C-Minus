@@ -61,7 +61,7 @@ program:
 	  declaration_list { final_tree = $1; }
 	;
 
-/* 改成右递归 */
+/* 改成右递归1 */
 declaration_list:
 	  declaration declaration_list {
 	    Ast node = $1;
@@ -79,7 +79,7 @@ declaration:
 var_declaration:
 	  type_specifier ID { push_lineno(yylineno); } ';' {
 	    if($1 == VoidT) {
-	      error(SemanticError, "declare variable \"%s\" as void", $2); // 提前检查
+	      error(SemanticError, "declare variable \"%s\" as void", $2); // 提前检查1
 	    } else {
 	      assert($1 == IntT);
 	      Ast node = new_ast_node();
@@ -92,7 +92,7 @@ var_declaration:
 	  }
 	| type_specifier ID { push_lineno(yylineno); } '[' NUM ']' ';' {
 	    if($1 == VoidT) {
-	      error(SemanticError, "declare variable \"%s\" as void", $2); // 提前检查
+	      error(SemanticError, "declare variable \"%s\" as void", $2); // 提前检查2
 	    } else {
 	      assert($1 == IntT);
 	      Ast node = new_ast_node();
@@ -129,7 +129,7 @@ params:
 	| VOID { $$ = NULL; }
 	;
 
-/* 改成右递归 */
+/* 改成右递归2 */
 param_list:
 	  param ',' param_list {
 	    Ast node = $1;
@@ -142,7 +142,7 @@ param_list:
 param:
 	  type_specifier ID {
 	    if($1 == VoidT) {
-	      error(SemanticError, "declare parameter \"%s\" as void", $2); // 提前检查
+	      error(SemanticError, "declare parameter \"%s\" as void", $2); // 提前检查3
 	    } else {
 	      assert($1 == IntT);
 	      Ast node = new_ast_node();
@@ -155,7 +155,7 @@ param:
 	  }
 	| type_specifier ID { push_lineno(yylineno); } '[' ']' {
 	    if($1 == VoidT) {
-	      error(SemanticError, "declare parameter \"%s\" as void", $2); // 提前检查
+	      error(SemanticError, "declare parameter \"%s\" as void", $2); // 提前检查4
 	    } else {
 	      assert($1 == IntT);
 	      Ast node = new_ast_node();
@@ -188,7 +188,7 @@ compound_stmt:
 	  }
 	;
 
-/* 改成右递归 */
+/* 改成右递归3 */
 local_declarations:
 	  var_declaration local_declarations {
 	    Ast node = $1;
@@ -198,7 +198,7 @@ local_declarations:
 	| { $$ = NULL; }
 	;
 
-/* 改成右递归 */
+/* 改成右递归4 */
 statement_list:
 	  statement statement_list {
 	    Ast node = $1;
@@ -313,7 +313,7 @@ simple_expression:
 	    Ast node = new_ast_node();
 	    node->kind = Expr_Binary;
 	    node->operator = $2;
-	    node->type = BoolT; // 提前锁定类型
+	    node->type = BoolT; // 提前锁定类型1
 	    node->children[0] = $1;
 	    node->children[1] = $4;
 	    node->lineno = pop_lineno();
@@ -336,7 +336,7 @@ additive_expression:
 	    Ast node = new_ast_node();
 	    node->kind = Expr_Binary;
 	    node->operator = $2;
-	    node->type = IntT; // 提前锁定类型
+	    node->type = IntT; // 提前锁定类型2
 	    node->children[0] = $1;
 	    node->children[1] = $4;
 	    node->lineno = pop_lineno();
@@ -355,7 +355,7 @@ term:
 	    Ast node = new_ast_node();
 	    node->kind = Expr_Binary;
 	    node->operator = $2;
-	    node->type = IntT; // 提前锁定类型
+	    node->type = IntT; // 提前锁定类型3
 	    node->children[0] = $1;
 	    node->children[1] = $4;
 	    node->lineno = pop_lineno();
@@ -377,7 +377,7 @@ factor:
 	    Ast node = new_ast_node();
 	    node->kind = Expr_Const;
 	    node->number = $1;
-	    node->type = IntT; // 提前锁定类型
+	    node->type = IntT; // 提前锁定类型4
 	    node->lineno = yylineno;
 	    $$ = node;
 	  }

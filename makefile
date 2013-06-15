@@ -30,7 +30,9 @@ parse.aux.o: parse.aux.c parse.tab.h
 scan.aux.o: scan.aux.c parse.tab.h
 	$(CC) $(CFLAGS) -c scan.aux.c -o scan.aux.o
 
-scan.o parse.o parse.tab.h: scan.l parse.y globals.h
+scan.o parse.o parse.tab.h: scan.l parse.y \
+		globals.h util.h semantic.h \
+		scan.aux.h parse.aux.h semantic.h
 	$(YACC) -d parse.y
 	$(CC) $(CFLAGS) -c parse.tab.c -o parse.o
 	$(LEX) scan.l

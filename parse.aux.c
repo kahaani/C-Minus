@@ -22,11 +22,7 @@ int pop_lineno() {
 
 /******************************/
 
-static count = 0; // for test
-
 Ast new_ast_node() {
-	count++; // for test
-
 	Ast node = (Ast) malloc(sizeof(struct AstNode));
 	if(node == NULL) {
 		error(RuntimeError, "memory allocation fail in new_ast_node()");
@@ -62,8 +58,9 @@ static indentno = -1;
 
 static void print_spaces(void) {
 	int i;
-	for (i=0; i<indentno; i++)
+	for(i=0; i<indentno; i++) {
 		printf("\t");
+	}
 }
 
 /******************************/
@@ -72,6 +69,7 @@ static void print_ast(Ast node) {
 	INDENT;
 	while(node != NULL) {
 		print_spaces();
+
 		switch(node->kind) {
 		case Decl_Var:
 			printf("Decl_Var: name = %s, lineno = %d, type = %s",
@@ -143,17 +141,6 @@ static void print_ast(Ast node) {
 			printf("Expr_Binary: type = %s, oper = \"%s\", lineno = %d\n",
 					type_to_str(node->type), operator_to_str(node->operator), node->lineno);
 			break;
-			/*
-			switch(node->operator) {
-				case LT: printf(", oper = LT\n"); break;
-				case LE: printf(", oper = LE\n"); break;
-				case GT: printf(", oper = GT\n"); break;
-				case GE: printf(", oper = GE\n"); break;
-				case EQ: printf(", oper = EQ\n"); break;
-				case NE: printf(", oper = NE\n"); break;
-				default: printf(", oper = %c\n", node->operator);
-			}
-			*/
 			print_spaces(); printf("--left expression:\n");
 			print_ast(node->children[0]);
 			print_spaces(); printf("--right expression:\n");
@@ -186,7 +173,6 @@ static void print_ast(Ast node) {
 }
 
 void print_ast_root(Ast root) {
-	printf("times of new_node(): %d\n", count);
 	print_ast(root);
 }
 

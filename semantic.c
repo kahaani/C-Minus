@@ -36,6 +36,7 @@ static Type check_symtab(Ast node) {
 			yylineno = node->lineno;
 			error(TypeError, "right value must be INT");
 		}
+
 		return IntT;
 
 	case Expr_Binary:
@@ -81,8 +82,8 @@ static Type check_symtab(Ast node) {
 		entry = funinfo->symtab->head;
 		Ast param = node->children[0];
 
-		while(entry != NULL && param != NULL) { // 表达式列表，仅此一处
-			if(param->kind == Expr_Var) {
+		while(entry != NULL && param != NULL) { // parameter order: form right to left
+			if(param->kind == Expr_Var) { // special case (very restricted)
 				ignore_array_without_index = TRUE;
 			}
 			type = check_symtab(param);
@@ -96,15 +97,14 @@ static Type check_symtab(Ast node) {
 			}
 			
 			entry = entry->next;
-			param = param->sibling;
+			param = param->sibling; // list of expression, only here
 		}
 		
 		if(entry != NULL || param != NULL) {
 			yylineno = node->lineno;
-			error(SemanticError,
-				"parameter number mismatch between parameter list and function \"%s\" prototype",
-				node->name);
+			error(SemanticError, "unmatched parameter number of function \"%s\"", node->name);
 		}
+		
 		return funinfo->type;
 
 	case Expr_Var:
@@ -122,7 +122,7 @@ static Type check_symtab(Ast node) {
 			}
 			return IntT;
 		} else if(entry->type == IntArrayT && node->type == IntT) {
-			if(ignore_array_without_index) { // 仅当出现在实参列表时可以例外
+			if(ignore_array_without_index) { // only usage of ignore_array_without_index
 				return IntArrayT;
 			} else {
 				yylineno = node->lineno;
@@ -193,7 +193,7 @@ static void build_symtab(Ast node) {
 			type = check_symtab(node->children[0]);
 			if(type != BoolT) {
 				yylineno = node->lineno;
-				error(TypeError, "condiction of if-stat must be BOOL");
+				error(TypeError, "condiction of if-statement must be BOOL");
 			}
 			
 			build_symtab(node->children[1]); // recursion

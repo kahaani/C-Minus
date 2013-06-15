@@ -1,6 +1,6 @@
 #include "globals.h"
 
-// for yacc
+// only for yacc
 void yyerror(char *s, ...) {
 	va_list ap;
 	va_start(ap, s);
@@ -21,10 +21,12 @@ void error(ErrorType type, char *s, ...) {
 		case SyntaxError:
 		case SemanticError:
 		case TypeError:
+			// with lineno
 			fprintf(stderr, "%s in line %d: ", errortype_to_str(type), yylineno);
 			break;
 		case Bug:
 		case RuntimeError:
+			// without lineno
 			fprintf(stderr, "%s: ", errortype_to_str(type));
 			break;
 		default:

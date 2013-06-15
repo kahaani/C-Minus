@@ -32,6 +32,7 @@ typedef enum {
 	Stat_Compound, Stat_Select, Stat_Iterate, Stat_Return, Stat_Empty, Stat_Expression,
 	Expr_Assign, Expr_Binary, Expr_Fun, Expr_Var, Expr_Const
 } Kind;
+
 typedef enum { IntT, IntArrayT, VoidT, BoolT } Type;
 
 #define MAX_CHILDREN 3
