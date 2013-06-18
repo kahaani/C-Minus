@@ -54,7 +54,7 @@ struct AstNode {
 
 	int lineno;
 	
-	Symtab symtab;
+	Symtab symtab; // for semantic
 };
 
 /******************************/
@@ -72,11 +72,13 @@ Ast parse();
 #include "parse.aux.h"
 #include "semantic.aux.h"
 #include "semantic.h"
+#include "code.aux.h"
+#include "code.h"
 #include "util.h"
 
 #define TRACE_SCAN     FALSE
 #define YYDEBUG        FALSE
-#define TRACE_PARSE    TRUE
-#define TRACE_SEMANTIC TRUE
+#define TRACE_PARSE    FALSE
+#define TRACE_SEMANTIC FALSE
 
 #endif /* GLOBALS_H */

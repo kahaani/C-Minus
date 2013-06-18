@@ -8,6 +8,7 @@ typedef enum {
 
 void yyerror(char *s, ...);
 void error(ErrorType type, char *s, ...);
+void warning(char *s, ...);
 
 char* errortype_to_str(ErrorType type);
 char* type_to_str(Type type);

@@ -224,8 +224,8 @@ static void build_symtab(Ast node) {
 			} else if (funinfo->type == VoidT && node->type == VoidT) {
 				; // do nothing;
 			} else {
-				assert(funinfo->type == IntT && node->type == VoidT
-					|| funinfo->type == VoidT && node->type == IntT);
+				assert((funinfo->type == IntT && node->type == VoidT)
+					|| (funinfo->type == VoidT && node->type == IntT));
 				yylineno = node->lineno;
 				error(TypeError, "type mismatch between return statement and function prototype");
 			}
@@ -255,15 +255,19 @@ static void build_symtab(Ast node) {
 
 void build_symtab_root(Ast root) {
 	// prelude symtab: global variable
-	global_var = new_symtab(Global_Var);
-	push_symtab(global_var);
+	push_symtab(new_symtab(Global_Var));
 	
 	// prelude functions: input() & output()
-	push_funinfo(prelude_input());
-	push_funinfo(prelude_output());
+	push_funinfo(prelude_input_funinfo());
+	push_funinfo(prelude_output_funinfo());
 	
 	// build symtab and check type recursively
 	build_symtab(root);
+	
+	// make sure the correctness of symtab stack
+	if(top_symtab()->kind != Global_Var) {
+		error(Bug, "symtab stack not clean after semantic analysis");
+	}
 	
 	// check the position of main()
 	if(strcmp(top_funinfo()->name, "main") != 0) {

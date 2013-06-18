@@ -39,6 +39,15 @@ void error(ErrorType type, char *s, ...) {
 	exit(1);
 }
 
+void warning(char *s, ...) {
+	va_list ap;
+	va_start(ap, s);
+
+	fprintf(stderr, "Warning: ");
+	vfprintf(stderr, s, ap);
+	fprintf(stderr, "\n");
+}
+
 char* errortype_to_str(ErrorType type) {
 	switch(type) {
 		case Bug:           return "Bug";

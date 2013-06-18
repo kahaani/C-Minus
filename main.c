@@ -26,6 +26,8 @@ int main() {
 	print_symtab_root(ast);
 #endif
 
+	codegen_root(ast);
+
 #endif /* TRACE_SCAN */
 
 	return 0;

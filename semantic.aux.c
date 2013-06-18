@@ -1,10 +1,6 @@
 #include "globals.h"
 
-Symtab  global_var = NULL;
-
-/******************************/
-
-FunInfo fun_list = NULL;
+static FunInfo fun_list = NULL;
 
 void push_funinfo(FunInfo funinfo) {
 	funinfo->next = fun_list;
@@ -96,7 +92,7 @@ FunInfo new_funinfo(char* name, Type type, Symtab symtab) {
 	funinfo->var_size = 0;
 	funinfo->symtab = symtab;
 	
-	funinfo->address = -1;
+	funinfo->address = -1; // for codegen
 	funinfo->next = NULL;
 	
 	return funinfo;
@@ -194,14 +190,14 @@ FunInfo lookup_funinfo(char* name) {
 
 /******************************/
 
-FunInfo prelude_input() {
+FunInfo prelude_input_funinfo() {
 	Symtab symtab = new_symtab(Fun_Param);
 
 	FunInfo funinfo = new_funinfo("input", IntT, symtab);
 	return funinfo;
 }
 
-FunInfo prelude_output() {
+FunInfo prelude_output_funinfo() {
 	Entry entry = new_entry("x", IntT, 0, Fun_Param, NULL);
 
 	Symtab symtab = new_symtab(Fun_Param);
@@ -259,11 +255,11 @@ static void print_symtab_node(Ast node) {
 
 void print_symtab_root(Ast root) {
 	// prelude symtab: global variable
-	print_symtab(global_var);
+	print_symtab(top_symtab());
 	
 	// two prelude functions: input() & output()
-	print_symtab(top_funinfo()->symtab);
-	print_symtab(top_funinfo()->next->symtab);
+	print_symtab(lookup_funinfo("input")->symtab);
+	print_symtab(lookup_funinfo("output")->symtab);
 	
 	// print ast recursively
 	print_symtab_node(root);

@@ -30,8 +30,6 @@ struct SymtabDec {
 	Symtab next;
 };
 
-extern Symtab global_var;
-
 /******************************/
 
 struct FunInfoDec;
@@ -43,14 +41,12 @@ struct FunInfoDec {
 	
 	int param_size;
 	int var_size;
-	Symtab symtab;
+	Symtab symtab; // Fun_Param
 	
-	int address;
+	int address; // for codegen
 	
 	FunInfo next;
 };
-
-extern FunInfo fun_list;
 
 /******************************/
 
@@ -70,8 +66,8 @@ int insert_entry(char* name, Type type, int array_size, int lineno);
 Entry lookup_entry(char* name);
 FunInfo lookup_funinfo(char* name);
 
-FunInfo prelude_input();
-FunInfo prelude_output();
+FunInfo prelude_input_funinfo();
+FunInfo prelude_output_funinfo();
 
 void print_symtab_root(Ast root);
 void print_funlist();
