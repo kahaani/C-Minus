@@ -79,7 +79,7 @@ Ast parse(void);
 
 #define TRACE_SCAN     FALSE
 #define YYDEBUG        FALSE
-#define TRACE_PARSE    TRUE
-#define TRACE_SEMANTIC TRUE
+#define TRACE_PARSE    FALSE
+#define TRACE_SEMANTIC FALSE
 
 #endif /* GLOBALS_H */

@@ -204,9 +204,7 @@ static void build_symtab(Ast node) {
 			}
 			
 			build_symtab(node->children[1]); // recursion
-			if(node->has_else == TRUE) {
-				build_symtab(node->children[2]); // recursion
-			}
+			build_symtab(node->children[2]); // recursion（不检查has_else，因为NULL是安全的）
 			break;
 
 		case Stat_Iterate:
