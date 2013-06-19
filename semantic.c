@@ -86,7 +86,8 @@ static Type check_symtab(Ast node) {
 		Ast param = node->children[0];
 
 		while(entry != NULL && param != NULL) { // parameter order: form right to left
-			if(param->kind == Expr_Var) { // special case (very restricted)
+			if(entry->type == IntArrayT && param->kind == Expr_Var) { // special case (very restricted)
+				//fprintf(stderr, "%s,%s\n", entry->name, param->name);
 				ignore_array_without_index = TRUE;
 			}
 			type = check_symtab(param);

@@ -83,8 +83,8 @@ void pseudo_fun_head(char* name) {
 }
 
 // note: unsafe ax
-void pseudo_call(char* name) {
-	FunInfo funinfo = lookup_funinfo(name);
+void pseudo_call(FunInfo funinfo) {
+	char* name = funinfo->name;
 	int address = funinfo->address;
 	int size = funinfo->param_size;
 	
@@ -92,14 +92,13 @@ void pseudo_call(char* name) {
 		error(Bug, "address of funtion \"%s\" < 0", name);
 	}
 
-	emit_comment("-> [pseudo] call:");
+	emit_comment("-> [pseudo] call");
 	emit_comment(name);
-	pseudo_mov_reg(ax, pc, 3, "ac = pc + 3 (next pc)");
+	pseudo_mov_reg(ax, pc, 3, "ac = pc + 3 (next pc)"); // why 4? "push ax" capture 2 positions
 	pseudo_push(ax, "push ax (return address)");
 	pseudo_mov_const(pc, address, "pc = address (jmp)");
 
-	//清理堆栈
-	//pseudo_mov_reg(sp, sp, size, "sp = sp + param_size");
+	pseudo_mov_reg(sp, sp, size, "sp = sp + param_size"); // next pc: clean stack (parameter)
 	emit_comment("<- [pseudo] call");
 }
 
@@ -110,12 +109,33 @@ void pseudo_get_var_addr(Ast node) {
 
 	emit_comment("-> [pseudo] get var addr");
 	switch(entry->kind) {
-		case Global_Var:   emit_RM("LDA", ax, -offset,   gp, "ax = gp-offset"); break;
-		case Compound_Var: emit_RM("LDA", ax, -offset-1, bp, "ax = bp-offset-1"); break;
-		case Fun_Param:    emit_RM("LDA", ax, offset+2,  bp, "ax = bp+offset+2"); break;
+		case Global_Var:
+			emit_RM("LDA", ax, -offset, gp, "ax = gp-offset");
+			break;
+		case Compound_Var:
+			emit_RM("LDA", ax, -offset-1, bp, "ax = bp-offset-1");
+			break;
+		case Fun_Param:
+			if(entry->type == IntT) {
+				emit_RM("LDA", ax, offset+2, bp, "ax = bp+offset+2");
+			} else {
+				assert(entry->type == IntArrayT); // the value here is an address
+				emit_RM("LD", ax, offset+2, bp, "ax = data[bp+offset+2]");
+			}
+			break;
 		default: error(Bug, "unknown entry kind");
 	}
 	emit_comment("<- [pseudo] get var addr");
+}
+
+// input: bx, ax
+// output: ax
+void pseudo_compare(char* command) {
+	emit_RO("SUB", ax, bx, ax, "ax = bx - ax");
+	emit_RM(command, ax, 2, pc, "conditional jmp: if true");
+	pseudo_mov_const(ax, 0, "ax = 0 (false case)");
+	pseudo_mov_reg(pc, pc, 1, "unconditional jmp");
+	pseudo_mov_const(ax, 1, "ax = 1 (true case)");
 }
 
 /*

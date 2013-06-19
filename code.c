@@ -1,6 +1,7 @@
 #include "globals.h"
 
 static int donot_fetch_var_value = FALSE;
+static int saved_config = FALSE;
 
 // return: ax
 static void codegen_exp(Ast node) {
@@ -21,26 +22,72 @@ static void codegen_exp(Ast node) {
 	case Stat_Expression:
 		error(Bug, "statement ast node should not attend in codegen_exp()");
 
-	case Expr_Assign: //TODO
+	case Expr_Assign:
 		emit_comment("-> assign");
 
 		donot_fetch_var_value = TRUE;
 		codegen_exp(node->children[0]);
 		pseudo_push(ax, "push ax");
+		//assert(donot_fetch_var_value == FALSE);
 		donot_fetch_var_value = FALSE;
 		
 		codegen_exp(node->children[1]);
 		
-		pseudo_pop(bx, "push bx");
-		emit_RM("ST", ax);
+		pseudo_pop(bx, "pop bx");
+		emit_RM("ST", ax, 0, bx, "data[bx] = ax");
 		
 		emit_comment("<- assign");
 		break;
 
-	case Expr_Binary: //TODO
+	case Expr_Binary:
+		emit_comment("-> op");
+		
+		codegen_exp(node->children[0]); // left sub-exp
+		pseudo_push(ax, "push ax");
+		codegen_exp(node->children[1]); // right sub-exp
+		pseudo_pop(bx, "push bx");
+		
+		switch(node->operator) {
+			case '+': emit_RO("ADD", ax, bx, ax, "ax = bx + ax"); break;
+			case '-': emit_RO("SUB", ax, bx, ax, "ax = bx - ax"); break;
+			case '*': emit_RO("MUL", ax, bx, ax, "ax = bx * ax"); break;
+			case '/': emit_RO("DIV", ax, bx, ax, "ax = bx / ax"); break;
+			case EQ: pseudo_compare("JEQ"); break;
+			case NE: pseudo_compare("JNE"); break;
+			case LT: pseudo_compare("JLT"); break;
+			case LE: pseudo_compare("JLE"); break;
+			case GT: pseudo_compare("JGT"); break;
+			case GE: pseudo_compare("JGE"); break;
+			default:
+				error(Bug, "unknown operator");
+		}
+		
+		emit_comment("<- op");
 		break;
 
-	case Expr_Fun: //TODO
+	case Expr_Fun:
+		emit_comment("-> call function:");
+		emit_comment(node->name);
+		
+		FunInfo funinfo = lookup_funinfo(node->name);
+		Entry entry = funinfo->symtab->head;
+		Ast param = node->children[0];
+
+		while(entry != NULL && param != NULL) { // parameter order: form right to left
+			if(entry->type == IntArrayT && param->kind == Expr_Var) { // special case (very restricted)
+				donot_fetch_var_value = TRUE;
+			}
+			codegen_exp(param);
+			pseudo_push(ax, "push ax (parameter)");
+			//assert(donot_fetch_var_value == FALSE);
+			donot_fetch_var_value = FALSE;
+
+			entry = entry->next;
+			param = param->sibling; // list of expression, only here
+		}
+		
+		pseudo_call(funinfo);
+		emit_comment("<- call function");
 		break;
 
 	case Expr_Var:
@@ -48,7 +95,12 @@ static void codegen_exp(Ast node) {
 		pseudo_get_var_addr(node);
 		if(node->type == IntArrayT) {
 			pseudo_push(ax, "push ax");
+
+			saved_config = donot_fetch_var_value;
+			donot_fetch_var_value = FALSE;
 			codegen_exp(node->children[0]);
+			donot_fetch_var_value = saved_config;
+
 			pseudo_pop(bx, "pop bx");
 			emit_RO("SUB", ax, bx, ax, "ax = bx - ax (array offset)");
 		} else {
@@ -58,17 +110,7 @@ static void codegen_exp(Ast node) {
 			emit_RM("LD", ax, 0, ax, "ax = data[ax]");
 		}
 		emit_comment("<- var");
-/*		pseudo_get_var(node);
-		if(node->type == IntArrayT) {
-			pseudo_push(ax, "push ax");
-			codegen_exp(node->children[0]);
-			pseudo_pop(bx, "pop bx");
-			emit_RO("SUB", ax, bx, ax, "ax = bx - ax (array offset)");
-			emit_RM("LD", ax, 0, ax, "ax = data[ax]");
-		} else {
-			assert(node->type == IntT);
-		}
-*/		break;
+		break;
 
 	case Expr_Const:
 		emit_comment("-> const");
@@ -122,12 +164,12 @@ static void codegen_stmt(Ast node) {
 			codegen_exp(node->children[0]); // value in ax
 
 			saved_loc_1 = emit_skip(1);
-			emit_comment("skip: jmp to else");
+			emit_comment("skip: conditional jmp to else");
 			
 			codegen_stmt(node->children[1]); // recursion
 			
 			saved_loc_2 = emit_skip(1);
-			emit_comment("skip: jmp to end");
+			emit_comment("skip: unconditional jmp to end");
 			
 			current_loc = emit_skip(0);
 			emit_backup(saved_loc_1);
@@ -151,7 +193,7 @@ static void codegen_stmt(Ast node) {
 			codegen_exp(node->children[0]);
 			
 			saved_loc_2 = emit_skip(1);
-			emit_comment("skip: jmp to end");
+			emit_comment("skip: conditional jmp to end");
 			
 			codegen_stmt(node->children[1]); // recursion
 			
@@ -159,7 +201,7 @@ static void codegen_stmt(Ast node) {
 			
 			current_loc = emit_skip(0);
 			emit_backup(saved_loc_2);
-			emit_RM("JNE", ax, current_loc, zero, "if ax != 0, pc = add of endwhile");
+			emit_RM("JEQ", ax, current_loc, zero, "if ax == 0, pc = add of endwhile");
 			emit_restore();
 			
 			emit_comment("<- while");
@@ -235,24 +277,36 @@ void codegen_root(Ast root) {
 	codegen_init();
 	
 	// jmp to main 改成 call main 后面跟 HALT
-	emit_comment("skip: address of main()");
+	emit_comment("skip 5: call main, waiting for addr of main()");
+	int call_main_loc = emit_skip(5);
+	emit_RO("HALT", ignore, ignore, ignore, "stop program");
+	/*
+	emit_comment("skip: jmp to addr of test code");
 	int jmp_to_main = emit_skip(1);
+	*/
 
 	codegen_prelude_input();
 	codegen_prelude_output();
 
 	codegen_stmt(root);
 
+	emit_backup(call_main_loc);
+	pseudo_call(lookup_funinfo("main"));
+	emit_restore();
+
+	/*
 	// backpatch add of main
 	int current_loc = emit_skip(0);
 	emit_backup(jmp_to_main);
 	pseudo_mov_const(pc, current_loc, "backpatch: pc = main()");
 	emit_restore();
 	
+	
 	// for test
 	pseudo_mov_const(ax, 1234, "ax = 1234");
 	pseudo_push(ax, "push ax");
-	pseudo_call("output");
+	pseudo_call(lookup_funinfo("output"));
+	*/
 
 	emit_comment("<- end of TM code");
 }

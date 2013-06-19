@@ -28,8 +28,9 @@ void pseudo_pop(int reg, char* c);
 
 void pseudo_return(void);
 void pseudo_fun_head(char* name);
-void pseudo_call(char* name);
+void pseudo_call(FunInfo funinfo);
 void pseudo_get_var_addr(Ast node);
+void pseudo_compare(char* command);
 
 //void pseudo_get_var(Ast node);
 //void pseudo_set_var(Ast node);
