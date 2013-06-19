@@ -7,17 +7,15 @@ static int lineno_stk_index = 0;
 void push_lineno(int x) {
 	if(lineno_stk_index == LINENO_STK_SIZE) {
 		error(RuntimeError, "lineno stack overflow");
-	} else {
-		lineno_stk[lineno_stk_index++] = x;
 	}
+	lineno_stk[lineno_stk_index++] = x;
 }
 
 int pop_lineno() {
 	if(lineno_stk_index == 0) {
 		error(Bug, "lineno stack is empty when poping");
-	} else {
-		return lineno_stk[--lineno_stk_index];
 	}
+	return lineno_stk[--lineno_stk_index];
 }
 
 /******************************/
@@ -51,7 +49,7 @@ Ast new_ast_node() {
 
 /******************************/
 
-static indentno = -1;
+static int indentno = -1;
 
 #define INDENT indentno+=1
 #define UNINDENT indentno-=1

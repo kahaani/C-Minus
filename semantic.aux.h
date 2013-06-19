@@ -62,7 +62,7 @@ Entry new_entry(char* name, Type type, int no, StKind kind, Entry next);
 Symtab new_symtab(StKind kind);
 FunInfo new_funinfo(char* name, Type type, Symtab symtab);
 
-int insert_entry(char* name, Type type, int array_size, int lineno);
+void insert_entry(char* name, Type type, int array_size, int lineno);
 Entry lookup_entry(char* name);
 FunInfo lookup_funinfo(char* name);
 

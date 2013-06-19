@@ -2,7 +2,7 @@ CC = gcc
 LEX = flex
 YACC = bison
 
-CFLAGS =
+CFLAGS = -Wall
 
 cmc: scan.o parse.o semantic.o code.o \
 		scan.aux.o parse.aux.o semantic.aux.o code.aux.o \

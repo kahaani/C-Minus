@@ -68,13 +68,15 @@ void pseudo_pop(int reg, char* c) {
 
 /******************************/
 
-// note: unsafe ac
-void pseudo_call(FunInfo funinfo) {
-	emitComment("-> call function");
+// note: unsafe ax
+void pseudo_call(char* name) {
+	FunInfo funinfo = lookup_funinfo(name);
+
+	emitComment("-> call");
 	pseudo_mov_reg(ax, pc, 3, "ac = pc + 3");
 	pseudo_push(ax, "push ax");
 	pseudo_mov_const(pc, funinfo->address, "pc = address");
-	emitComment("<- call function");
+	emitComment("<- call");
 }
 
 void pseudo_fun_head(FunInfo funinfo) {
@@ -88,9 +90,19 @@ void pseudo_fun_head(FunInfo funinfo) {
 	emitComment("<- function head");
 }
 
-void pseudo_fun_return() {
+void pseudo_return() {
+	emitComment("-> return");
 	pseudo_mov_reg(sp, bp, 0, "sp = bp");
 	pseudo_pop(bp, "pop bp");
 	pseudo_pop(pc, "pop pc");
+	emitComment("-> return");
+}
+
+void pseudo_get_var() {
+
+}
+
+void pseudo_set_var() {
+
 }
 

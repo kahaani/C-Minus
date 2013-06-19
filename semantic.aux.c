@@ -100,7 +100,7 @@ FunInfo new_funinfo(char* name, Type type, Symtab symtab) {
 
 /******************************/
 
-int insert_entry(char* name, Type type, int array_size, int lineno) {
+void insert_entry(char* name, Type type, int array_size, int lineno) {
 	Symtab symtab = top_symtab();
 
 	// Step 1: check if duplicated

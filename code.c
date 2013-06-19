@@ -85,7 +85,7 @@ void codegen_prelude_input() {
 	emitComment("-> prelude function: input");
 	pseudo_fun_head(funinfo);
 	emitRO("IN", ax, ignore, ignore, "input ax");
-	pseudo_fun_return();
+	pseudo_return();
 	emitComment("<- prelude function: input");
 }
 
@@ -96,7 +96,7 @@ void codegen_prelude_output() {
 	pseudo_fun_head(funinfo);
 	emitRM("LD", ax, 2, bp, "ax = data[bp+2] (param 1)");
 	emitRO("OUT", ax, ignore, ignore, "output ax");
-	pseudo_fun_return();
+	pseudo_return();
 	emitComment("<- prelude function: output");
 }
 
@@ -104,12 +104,13 @@ void codegen_root(Ast root) {
 	emitComment("-> beginning of TM code");
 
 	emitComment("-> init sp");
-	// suppose: ax = 0
+	pseudo_mov_const(ax, 0, "ax = 0");
 	emitRM("LD", sp, 0, ax, "sp = data[0] (maxaddress)");
+	pseudo_mov_reg(sp, sp, 1, "sp = sp + 1");
 	emitRM("ST", ax, 0, ax, "data[0] = 0");
 	emitComment("<- init sp");
 
-	// jmp to main
+	// jmp to main 改成 call main 后面跟 HALT
 	emitComment("skip: address of main()");
 	int jmp_to_main = emitSkip(1);
 
@@ -124,9 +125,10 @@ void codegen_root(Ast root) {
 	pseudo_mov_const(pc, current_loc, "backpatch: pc = main()");
 	emitRestore();
 	
+	// for test
 	pseudo_mov_const(ax, 1234, "ax = 1234");
 	pseudo_push(ax, "push ax");
-	pseudo_call(lookup_funinfo("output"));
+	pseudo_call("output");
 
 	emitComment("<- end of TM code");
 }

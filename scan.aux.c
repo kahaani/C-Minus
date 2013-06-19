@@ -3,7 +3,7 @@
 void trace_scan() {
 	int token;
 	
-	while(token = yylex()) {
+	while((token = yylex())) {
 		if(token < 258) { // character
 			printf("line %d: %c", yylineno, token);
 		} else { // token
