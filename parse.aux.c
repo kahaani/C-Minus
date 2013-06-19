@@ -38,7 +38,7 @@ Ast new_ast_node(void) {
 	
 	node->kind = -1;
 	node->type = -1;
-	node->has_else = -1;
+	node->has_else = FALSE;
 	
 	node->lineno = -1;
 	
@@ -129,14 +129,15 @@ static void print_ast(Ast node) {
 			print_ast(node->children[0]);
 			break;
 		case Expr_Assign:
-			printf("Expr_Assign: lineno = %d\n", node->lineno);
+			printf("Expr_Assign: lineno = %d, (type = %s)\n", // 括号表示提前锁定类型，但没什么作用
+					node->lineno, type_to_str(node->type));
 			print_spaces(); printf("--variable:\n");
 			print_ast(node->children[0]);
 			print_spaces(); printf("--expression:\n");
 			print_ast(node->children[1]);
 			break;
 		case Expr_Binary:
-			printf("Expr_Binary: type = %s, oper = \"%s\", lineno = %d\n",
+			printf("Expr_Binary: (type = %s), oper = \"%s\", lineno = %d\n",
 					type_to_str(node->type), operator_to_str(node->operator), node->lineno);
 			break;
 			print_spaces(); printf("--left expression:\n");
@@ -158,7 +159,7 @@ static void print_ast(Ast node) {
 			}
 			break;
 		case Expr_Const:
-			printf("Expr_Const: value = %d, lineno = %d, type = %s\n",
+			printf("Expr_Const: value = %d, lineno = %d, (type = %s)\n",
 					node->number, node->lineno, type_to_str(node->type));
 			break;
 		default:

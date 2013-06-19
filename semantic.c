@@ -37,6 +37,7 @@ static Type check_symtab(Ast node) {
 			error(TypeError, "right value must be INT");
 		}
 
+		assert(node->type == IntT); // 之前已经提前锁定类型
 		return IntT;
 
 	case Expr_Binary:
@@ -59,6 +60,7 @@ static Type check_symtab(Ast node) {
 			case '-':
 			case '*':
 			case '/':
+				assert(node->type == IntT); // 之前已经提前锁定类型
 				return IntT;
 			case EQ:
 			case NE:
@@ -66,6 +68,7 @@ static Type check_symtab(Ast node) {
 			case LE:
 			case GT:
 			case GE:
+				assert(node->type == BoolT); // 之前已经提前锁定类型
 				return BoolT;
 			default:
 				error(Bug, "unknown operator");
@@ -105,7 +108,8 @@ static Type check_symtab(Ast node) {
 			error(SemanticError, "unmatched parameter number of function \"%s\"", node->name);
 		}
 		
-		return funinfo->type;
+		node->type = funinfo->type;
+		return funinfo->type; // IntT or VoidT
 
 	case Expr_Var:
 		entry = lookup_entry(node->name);
@@ -120,10 +124,12 @@ static Type check_symtab(Ast node) {
 				yylineno = node->lineno;
 				error(TypeError, "index of array \"%s\" must be INT", node->name);
 			}
-			return IntT;
+			return IntT; // 返回值是IntT，代表加下标后的计算结果是IntT；
+			//但 node->type = IntArrayT，代表本结点是以数组+下标的形式描述。
 		} else if(entry->type == IntArrayT && node->type == IntT) {
 			if(ignore_array_without_index) { // only usage of ignore_array_without_index
-				return IntArrayT;
+				return IntArrayT; // 返回值是IntArrayT，代表这个变量是一个数组名；
+				//但 node->type = IntT，代表本结点是以单个变量不带名称的形式描述。
 			} else {
 				yylineno = node->lineno;
 				error(TypeError, "array variable \"%s\" should followed by []", node->name);
@@ -137,6 +143,7 @@ static Type check_symtab(Ast node) {
 		}
 
 	case Expr_Const:
+		assert(node->type == IntT); // 之前已经提前锁定类型
 		return IntT;
 
 	default:

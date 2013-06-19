@@ -76,6 +76,7 @@ void pseudo_call(char* name) {
 	pseudo_mov_reg(ax, pc, 3, "ac = pc + 3");
 	pseudo_push(ax, "push ax");
 	pseudo_mov_const(pc, funinfo->address, "pc = address");
+
 	//清理堆栈
 	emitComment("<- call");
 }

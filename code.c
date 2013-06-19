@@ -79,6 +79,15 @@ static void codegen_stmt(Ast node) {
 	}
 }
 
+static void codegen_initsp(void) {
+	emitComment("-> init sp");
+	pseudo_mov_const(ax, 0, "ax = 0");
+	emitRM("LD", sp, 0, ax, "sp = data[0] (maxaddress)");
+	pseudo_mov_reg(sp, sp, 1, "sp = sp + 1");
+	emitRM("ST", ax, 0, ax, "data[0] = 0");
+	emitComment("<- init sp");
+}
+
 static void codegen_prelude_input() {
 	FunInfo funinfo = lookup_funinfo("input");
 
@@ -103,13 +112,8 @@ static void codegen_prelude_output() {
 void codegen_root(Ast root) {
 	emitComment("-> beginning of TM code");
 
-	emitComment("-> init sp");
-	pseudo_mov_const(ax, 0, "ax = 0");
-	emitRM("LD", sp, 0, ax, "sp = data[0] (maxaddress)");
-	pseudo_mov_reg(sp, sp, 1, "sp = sp + 1");
-	emitRM("ST", ax, 0, ax, "data[0] = 0");
-	emitComment("<- init sp");
-
+	codegen_initsp();
+	
 	// jmp to main 改成 call main 后面跟 HALT
 	emitComment("skip: address of main()");
 	int jmp_to_main = emitSkip(1);

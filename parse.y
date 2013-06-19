@@ -282,6 +282,7 @@ expression:
 	    node->kind = Expr_Assign;
 	    node->children[0] = $1;
 	    node->children[1] = $4;
+	    node->type = IntT; // 提前锁定类型1
 	    node->lineno = pop_lineno();
 	    $$ = node;
 	  }
@@ -313,7 +314,7 @@ simple_expression:
 	    Ast node = new_ast_node();
 	    node->kind = Expr_Binary;
 	    node->operator = $2;
-	    node->type = BoolT; // 提前锁定类型1
+	    node->type = BoolT; // 提前锁定类型2
 	    node->children[0] = $1;
 	    node->children[1] = $4;
 	    node->lineno = pop_lineno();
@@ -336,7 +337,7 @@ additive_expression:
 	    Ast node = new_ast_node();
 	    node->kind = Expr_Binary;
 	    node->operator = $2;
-	    node->type = IntT; // 提前锁定类型2
+	    node->type = IntT; // 提前锁定类型3
 	    node->children[0] = $1;
 	    node->children[1] = $4;
 	    node->lineno = pop_lineno();
@@ -355,7 +356,7 @@ term:
 	    Ast node = new_ast_node();
 	    node->kind = Expr_Binary;
 	    node->operator = $2;
-	    node->type = IntT; // 提前锁定类型3
+	    node->type = IntT; // 提前锁定类型4
 	    node->children[0] = $1;
 	    node->children[1] = $4;
 	    node->lineno = pop_lineno();
@@ -377,7 +378,7 @@ factor:
 	    Ast node = new_ast_node();
 	    node->kind = Expr_Const;
 	    node->number = $1;
-	    node->type = IntT; // 提前锁定类型4
+	    node->type = IntT; // 提前锁定类型5
 	    node->lineno = yylineno;
 	    $$ = node;
 	  }
