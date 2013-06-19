@@ -7,14 +7,14 @@ void push_funinfo(FunInfo funinfo) {
 	fun_list = funinfo;
 }
 
-FunInfo top_funinfo() {
+FunInfo top_funinfo(void) {
 	if(fun_list == NULL) {
 		error(Bug, "fun list is empty when toping");
 	}
 	return fun_list;
 }
 
-void reverse_fun_list() {
+void reverse_fun_list(void) {
 	FunInfo funinfo = fun_list;
 	fun_list = NULL;
 	
@@ -34,14 +34,14 @@ void push_symtab(Symtab symtab) {
 	st_stk = symtab;
 }
 
-void pop_symtab() {
+void pop_symtab(void) {
 	if(st_stk == NULL) {
 		error(Bug, "symtab stack is empty when poping");
 	}
 	st_stk = st_stk->next;
 }
 
-Symtab top_symtab() {
+Symtab top_symtab(void) {
 	if(st_stk == NULL) {
 		error(Bug, "symtab stack is empty when toping");
 	}
@@ -190,14 +190,14 @@ FunInfo lookup_funinfo(char* name) {
 
 /******************************/
 
-FunInfo prelude_input_funinfo() {
+FunInfo prelude_input_funinfo(void) {
 	Symtab symtab = new_symtab(Fun_Param);
 
 	FunInfo funinfo = new_funinfo("input", IntT, symtab);
 	return funinfo;
 }
 
-FunInfo prelude_output_funinfo() {
+FunInfo prelude_output_funinfo(void) {
 	Entry entry = new_entry("x", IntT, 0, Fun_Param, NULL);
 
 	Symtab symtab = new_symtab(Fun_Param);
@@ -265,7 +265,7 @@ void print_symtab_root(Ast root) {
 	print_symtab_node(root);
 }
 
-void print_funlist() {
+void print_funlist(void) {
 	FunInfo funinfo = top_funinfo();
 
 	while(funinfo != NULL) {

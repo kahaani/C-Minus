@@ -1,6 +1,6 @@
 #include "globals.h"
 
-void codegen_exp(Ast node) {
+static void codegen_exp(Ast node) {
 	assert(node != NULL);
 
 	switch(node->kind) {
@@ -33,7 +33,7 @@ void codegen_exp(Ast node) {
 	}
 }
 
-void codegen_stmt(Ast node) {
+static void codegen_stmt(Ast node) {
 	while(node != NULL) {
 		switch(node->kind) {
 
@@ -79,7 +79,7 @@ void codegen_stmt(Ast node) {
 	}
 }
 
-void codegen_prelude_input() {
+static void codegen_prelude_input() {
 	FunInfo funinfo = lookup_funinfo("input");
 
 	emitComment("-> prelude function: input");
@@ -89,7 +89,7 @@ void codegen_prelude_input() {
 	emitComment("<- prelude function: input");
 }
 
-void codegen_prelude_output() {
+static void codegen_prelude_output() {
 	FunInfo funinfo = lookup_funinfo("output");
 
 	emitComment("-> prelude function: output");

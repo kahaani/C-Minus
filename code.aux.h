@@ -20,7 +20,7 @@ void emitRM_Abs(char* op, int r, int a, char* c);
 
 int emitSkip(int howMany);
 void emitBackup(int loc);
-void emitRestore();
+void emitRestore(void);
 
 void pseudo_mov_reg(int dst, int src, int x, char* c);
 void pseudo_mov_const(int dst, int x, char* c);
@@ -29,6 +29,6 @@ void pseudo_pop(int reg, char* c);
 
 void pseudo_call(char* name);
 void pseudo_fun_head(FunInfo funinfo);
-void pseudo_return();
+void pseudo_return(void);
 
 #endif /* CODE_AUX_H */

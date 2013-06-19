@@ -1,6 +1,6 @@
 #include "globals.h"
 
-void trace_scan() {
+void trace_scan(void) {
 	int token;
 	
 	while((token = yylex())) {

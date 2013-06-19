@@ -76,6 +76,7 @@ void pseudo_call(char* name) {
 	pseudo_mov_reg(ax, pc, 3, "ac = pc + 3");
 	pseudo_push(ax, "push ax");
 	pseudo_mov_const(pc, funinfo->address, "pc = address");
+	//清理堆栈
 	emitComment("<- call");
 }
 
@@ -90,7 +91,7 @@ void pseudo_fun_head(FunInfo funinfo) {
 	emitComment("<- function head");
 }
 
-void pseudo_return() {
+void pseudo_return(void) {
 	emitComment("-> return");
 	pseudo_mov_reg(sp, bp, 0, "sp = bp");
 	pseudo_pop(bp, "pop bp");
@@ -98,11 +99,11 @@ void pseudo_return() {
 	emitComment("-> return");
 }
 
-void pseudo_get_var() {
+void pseudo_get_var(void) {
 
 }
 
-void pseudo_set_var() {
+void pseudo_set_var(void) {
 
 }
 

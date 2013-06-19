@@ -411,7 +411,7 @@ arg_list:
 
 %%
 
-Ast parse() {
+Ast parse(void) {
 	yyparse();
 	return final_tree;
 }

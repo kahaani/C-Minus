@@ -51,12 +51,12 @@ struct FunInfoDec {
 /******************************/
 
 void push_funinfo(FunInfo funinfo);
-FunInfo top_funinfo();
-void reverse_fun_list();
+FunInfo top_funinfo(void);
+void reverse_fun_list(void);
 
 void push_symtab(Symtab symtab);
-void pop_symtab();
-Symtab top_symtab();
+void pop_symtab(void);
+Symtab top_symtab(void);
 
 Entry new_entry(char* name, Type type, int no, StKind kind, Entry next);
 Symtab new_symtab(StKind kind);
@@ -66,10 +66,10 @@ void insert_entry(char* name, Type type, int array_size, int lineno);
 Entry lookup_entry(char* name);
 FunInfo lookup_funinfo(char* name);
 
-FunInfo prelude_input_funinfo();
-FunInfo prelude_output_funinfo();
+FunInfo prelude_input_funinfo(void);
+FunInfo prelude_output_funinfo(void);
 
 void print_symtab_root(Ast root);
-void print_funlist();
+void print_funlist(void);
 
 #endif /* SEMANTIC_AUX_H */

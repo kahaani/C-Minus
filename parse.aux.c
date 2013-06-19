@@ -11,7 +11,7 @@ void push_lineno(int x) {
 	lineno_stk[lineno_stk_index++] = x;
 }
 
-int pop_lineno() {
+int pop_lineno(void) {
 	if(lineno_stk_index == 0) {
 		error(Bug, "lineno stack is empty when poping");
 	}
@@ -20,7 +20,7 @@ int pop_lineno() {
 
 /******************************/
 
-Ast new_ast_node() {
+Ast new_ast_node(void) {
 	Ast node = (Ast) malloc(sizeof(struct AstNode));
 	if(node == NULL) {
 		error(RuntimeError, "memory allocation fail in new_ast_node()");

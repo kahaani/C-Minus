@@ -65,7 +65,7 @@ struct AstNode {
 
 extern int yylineno;
 int yylex(void);
-Ast parse();
+Ast parse(void);
 
 /******************************/
 
