@@ -37,7 +37,6 @@ static Type check_symtab(Ast node) {
 			error(TypeError, "right value must be INT");
 		}
 
-		assert(node->type == IntT); // 之前已经提前锁定类型
 		return IntT;
 
 	case Expr_Binary:
@@ -60,7 +59,6 @@ static Type check_symtab(Ast node) {
 			case '-':
 			case '*':
 			case '/':
-				assert(node->type == IntT); // 之前已经提前锁定类型
 				return IntT;
 			case EQ:
 			case NE:
@@ -68,7 +66,6 @@ static Type check_symtab(Ast node) {
 			case LE:
 			case GT:
 			case GE:
-				assert(node->type == BoolT); // 之前已经提前锁定类型
 				return BoolT;
 			default:
 				error(Bug, "unknown operator");
@@ -109,7 +106,6 @@ static Type check_symtab(Ast node) {
 			error(SemanticError, "unmatched parameter number of function \"%s\"", node->name);
 		}
 		
-		node->type = funinfo->type;
 		return funinfo->type; // IntT or VoidT
 
 	case Expr_Var:
@@ -144,7 +140,6 @@ static Type check_symtab(Ast node) {
 		}
 
 	case Expr_Const:
-		assert(node->type == IntT); // 之前已经提前锁定类型
 		return IntT;
 
 	default:
