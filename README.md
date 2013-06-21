@@ -1,4 +1,5 @@
 C-Minus
 =======
 
-A C- Compiler
+Completed. More elegant code will come soon.
+
