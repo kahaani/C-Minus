@@ -41,9 +41,9 @@ struct FunInfoDec {
 	
 	int param_size;
 	int var_size;
-	Symtab symtab; // Fun_Param
+	Symtab symtab; // point to Fun_Param
 	
-	int address; // for codegen
+	int address; // for codegen module
 	
 	FunInfo next;
 };

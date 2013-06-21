@@ -28,7 +28,6 @@ static void codegen_exp(Ast node) {
 		donot_fetch_var_value = TRUE;
 		codegen_exp(node->children[0]);
 		pseudo_push(ax, "push ax");
-		//assert(donot_fetch_var_value == FALSE);
 		donot_fetch_var_value = FALSE;
 		
 		codegen_exp(node->children[1]);
@@ -79,7 +78,6 @@ static void codegen_exp(Ast node) {
 			}
 			codegen_exp(param);
 			pseudo_push(ax, "push ax (parameter)");
-			//assert(donot_fetch_var_value == FALSE);
 			donot_fetch_var_value = FALSE;
 
 			entry = entry->next;
@@ -250,7 +248,6 @@ static void codegen_init(void) {
 	emit_RM("LD", gp, 0, zero, "gp = data[0] (maxaddress)");
 	emit_RM("ST", zero, 0, zero, "data[0] = 0");
 	pseudo_mov_reg(sp, gp, -size+1, "sp = gp - global_var_size + 1");
-	//pseudo_mov_reg(sp, sp, 1, "sp = sp + 1");
 	emit_comment("<- init zero, gp, sp");
 }
 
@@ -280,33 +277,16 @@ void codegen_root(Ast root) {
 	emit_comment("skip 5: call main, waiting for addr of main()");
 	int call_main_loc = emit_skip(5);
 	emit_RO("HALT", ignore, ignore, ignore, "stop program");
-	/*
-	emit_comment("skip: jmp to addr of test code");
-	int jmp_to_main = emit_skip(1);
-	*/
 
 	codegen_prelude_input();
 	codegen_prelude_output();
 
 	codegen_stmt(root);
 
+	// backpatch add of main
 	emit_backup(call_main_loc);
 	pseudo_call(lookup_funinfo("main"));
 	emit_restore();
-
-	/*
-	// backpatch add of main
-	int current_loc = emit_skip(0);
-	emit_backup(jmp_to_main);
-	pseudo_mov_const(pc, current_loc, "backpatch: pc = main()");
-	emit_restore();
-	
-	
-	// for test
-	pseudo_mov_const(ax, 1234, "ax = 1234");
-	pseudo_push(ax, "push ax");
-	pseudo_call(lookup_funinfo("output"));
-	*/
 
 	emit_comment("<- end of TM code");
 }

@@ -25,7 +25,7 @@ int emit_skip(int howMany) {
 }
 
 void emit_backup(int loc) {
-	if(loc > highEmitLoc) error(Bug, "loc > highEmitLoc"); //emit_comment("BUG in emit_backup");
+	if(loc > highEmitLoc) error(Bug, "loc > highEmitLoc in emit_backup()");
 	emitLoc = loc;
 }
 
@@ -138,54 +138,3 @@ void pseudo_compare(char* command) {
 	pseudo_mov_const(ax, 1, "ax = 1 (true case)");
 }
 
-/*
-// return: ax
-void pseudo_get_var(Ast node) {
-	Entry entry = lookup_entry(node->name);
-	int offset = entry->offset;
-	
-	emit_comment("-> [pseudo] get var");
-	emit_comment(node->name);
-	
-	if((entry->type == IntArrayT && node->type == IntArrayT) // common case: return address
-		|| (entry->type == IntArrayT && node->type == IntT)
-		// special case: pass array name as function argument, return address
-	) {
-		switch(entry->kind) {
-			case Global_Var:   emit_RM("LDA", ax, -offset,   gp, "ax = gp-offset"); break;
-			case Compound_Var: emit_RM("LDA", ax, -offset-1, bp, "ax = bp-offset-1"); break;
-			case Fun_Param:    emit_RM("LDA", ax, offset+2,  bp, "ax = bp+offset+2"); break;
-			default: error(Bug, "unknown entry kind");
-		}
-	} else if (entry->type == IntT && node->type == IntT) { // common case: retrun value
-		switch(entry->kind) {
-			case Global_Var:   emit_RM("LD", ax, -offset,   gp, "ax = data[gp-offset]"); break;
-			case Compound_Var: emit_RM("LD", ax, -offset-1, bp, "ax = data[bp-offset-1]"); break;
-			case Fun_Param:    emit_RM("LD", ax, offset+2,  bp, "ax = data[bp+offset+2]"); break;
-			default: error(Bug, "unknown entry kind");
-		}
-	} else { 
-		error(Bug, "type error of variable \"%s\" discoverd in pseudo_get_var()", node->name);
-	}
-	
-	emit_comment("<- [pseudo] get var");
-}
-*/
-/*
-// parameter: ax
-void pseudo_set_var(Ast node) {
-	Entry entry = lookup_entry(node->name);
-	int offset = entry->offset;
-	assert(entry->type == IntT && node->type == IntT);
-
-	emit_comment("-> [pseudo] set var");
-	emit_comment(node->name);
-	switch(entry->kind) {
-		case Global_Var:   emit_RM("ST", ax, -offset,   gp, "data[gp-offset]"); break;
-		case Compound_Var: emit_RM("ST", ax, -offset-1, bp, "data[bp-offset-1]"); break;
-		case Fun_Param:    emit_RM("ST", ax, offset+2,  bp, "data[bp+offset+2]"); break;
-		default: error(Bug, "unknown entry kind");
-	}
-	emit_comment("<- [pseudo] set var");
-}
-*/

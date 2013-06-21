@@ -32,7 +32,4 @@ void pseudo_call(FunInfo funinfo);
 void pseudo_get_var_addr(Ast node);
 void pseudo_compare(char* command);
 
-//void pseudo_get_var(Ast node);
-//void pseudo_set_var(Ast node);
-
 #endif /* CODE_AUX_H */
