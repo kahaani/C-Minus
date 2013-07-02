@@ -7,3 +7,8 @@ C- is a subset of C. It contains integers, integer arrays, and functions. It has
 
 Almost completed. More elegant code will come soon.
 
+TODO:
+- Error handler in Yacc
+- Operator precedence in Yacc
+- Pointer problem
+
