@@ -19,6 +19,8 @@
 #define NULL 0
 #endif
 
+typedef int Bool;
+
 /******************************/
 
 // declaration in symtab.h
